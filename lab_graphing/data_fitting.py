@@ -596,11 +596,11 @@ def custom_fit(x,y,y_u = []):
     param = []
     for i in range(0,num_param):
         param.append(float(input("Parameter {}: ".format(i+1))))
-    custom_func = lambda x, a : 162673.9236 * np.exp(-1*a*x)
+    custom_func = lambda x, a, b : a*x + b
     if(custom_func == None):
         return fit(fitting_types.NULL, x, y, [], custom_func, 0, [])
     custom_fit = fit(fitting_types.CUSTOM, x, y, [], custom_func, len(param), param)
-    return_data = non_linear(custom_func, x, y, 1, y_u)
+    return_data = non_linear(custom_func, x, y, num_param, y_u)
     exact_fit = fit(fitting_types.CUSTOM, x, y, [], custom_func, len(param), return_data[0])
     r_sqaured(custom_fit, x, y)
     r_sqaured(exact_fit, x, y)
@@ -682,6 +682,17 @@ def remove_noise(sheet: dataframe):
             for i in range(0,N):
                 new_y_data.append(abs(H[i]))
     sheet.Y = new_y_data
+
+    export = int(input("Export denoised data: "))
+    if(export == 0):
+        return
+    
+    datafile = open("Denoised/{}.csv".format(sheet.name), "w")
+    datafile.write("X,Y,X_U,Y_U,\n")
+    for i in range(len(sheet.X)):
+        datafile.write("{},{},{},{},\n".format(sheet.X[i], sheet.Y[i], sheet.X_U[i], sheet.Y_U[i]))
+    datafile.close()
+    
     
 
 

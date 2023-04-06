@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
-import matplotlib
 from sheet import dataframe
 from sheet import fit
 from sheet import fitting_types
 import numpy as np
+import CSV
+#from lab_graphing import get_key
 
 axis = None
 fitting_curves = []
+additional_datasets = []
 custom_legend_flag = False
 
 def plotting_menu(sheet: dataframe):
@@ -14,6 +16,7 @@ def plotting_menu(sheet: dataframe):
     while(exit == False):
         valid = False
         option = 0
+        options = 9
         while(valid == False):
             print("1) Plot data")
             print("2) Add error bars")
@@ -21,14 +24,16 @@ def plotting_menu(sheet: dataframe):
             print("4) Display graph")
             print("5) Add titles")
             print("6) Custom Legend")
-            print("7) Exit")
-            option = input("Select option (1-7): ")
+            print("7) Plot line data")
+            print("8) Add dataset")
+            print("{}) Exit".format(options))
+            option = input("Select option (1-{}): ".format(options))
             try:
                 option = int(option)
             except:
                 print("Invalid input")
                 continue
-            if(option < 7 or option >= 1):
+            if(option < options + 1 or option >= 1):
                 valid = True
         if(option == 1):
             plot_data(sheet)
@@ -43,6 +48,10 @@ def plotting_menu(sheet: dataframe):
         elif(option == 6):
             custom_legend()
         elif(option == 7):
+            plot_data_line(sheet)
+        elif(option == 8):
+            add_data_set()
+        elif(option == options):
             print("Returning to previous menu")
             exit = True
             continue
@@ -63,6 +72,40 @@ def custom_legend():
     legend = axis.legend(legend, loc = 0)
     legend.get_frame().set_alpha(0.5)
     
+def add_data_set():
+    global additional_datasets
+    sheets = CSV.csv_handling(use_current=True)
+
+    i = 1
+    print("Sheets currently loaded:")
+    for sheet in sheets:
+        entry  = "({}) {}".format(i, sheet)
+        print(entry)
+        i = i + 1
+    valid_sheet = False
+    number = 0
+    #while(valid_sheet == False):
+    #    number = input("Load sheet {} to {}: ".format(1,i-1))
+    #    try:
+    #        number = int(number)
+    #    except:
+    #        print("Not a number")
+    #        continue
+    #    
+    #    if(number <= i and number >= 1):
+    #        valid_sheet = True
+    #        continue
+    #    print("Invalid sheet number")
+    #print("Sheet {} loaded sucessfully".format(number))
+
+    for e in range(0,len(sheets)):
+        dict_key = ""
+        number = e+1
+        for i, key in enumerate(sheets.keys()):
+            if i == number - 1:
+                dict_key = key
+        additional_datasets.append(sheets.get(dict_key))
+  
 
 def plot_figure():
     global axis
@@ -95,6 +138,24 @@ def plot_data(data : dataframe, colour = ' '):
         axis.scatter(data.X, data.Y, color = 'black')
     else:
         axis.scatter(data.X, data.Y, color = colour)
+
+    for i in range(0,len(additional_datasets)):
+        plot = int(input("Plot data {}: ".format(additional_datasets[i].name)))
+        if(plot == 1):
+            if(colour == ' '):
+                axis.scatter(additional_datasets[i].X, additional_datasets[i].Y)
+            else:
+                axis.scatter(additional_datasets[i].X, additional_datasets[i].Y, color = colour)
+
+
+def plot_data_line(data : dataframe, colour = ' '):
+    global axis
+    if(axis == None):
+        initlize_figure()
+    if(colour == ' '):
+        axis.plot(data.X, data.Y, color='black')
+    else:
+        axis.plot(data.X, data.Y, color = colour)
 
 def add_error_bars(data : dataframe, colour = ' '):
     global axis

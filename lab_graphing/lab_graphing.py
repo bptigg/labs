@@ -14,7 +14,7 @@ def menu(sheets):
     i = 1
     print("Sheets currently loaded:")
     for sheet in sheets:
-        entry = "({}) {}".format(i, sheet)
+        entry  = "({}) {}".format(i, sheet)
         print(entry)
         i = i + 1
     valid_sheet = False

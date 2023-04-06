@@ -2,16 +2,22 @@ import pandas as pd
 import os
 import sheet
 
+active_directory = ""
 
-def csv_handling():
-    path = input("Folder to read from: ")
-    path_1 = "Excel\\" + path
+def csv_handling(use_current = False ):
+    global active_directory
+    path_1 = ""
+    if(use_current):
+        path_1 = active_directory
+    else:
+        path = input("Folder to read from: ")
+        path_1 = "Excel\\" + path
+        try:
+            possible_files = os.listdir(path_1)
+        except:
+            print("Directory doesn't exist")
+        active_directory = path_1 
 
-    try:
-        possible_files = os.listdir(path_1)
-    except:
-        print("Directory doesn't exist")
-    
     i = 1
     csv_files = []
     for x in os.listdir(path_1):
